@@ -10,56 +10,68 @@ class Bottles
 
   def verses(from, to)
     from.downto(to).map do |verse_number|
-      verse(verse_number)
+      Verse.new(verse_number).lyrics
     end.join("\n")
   end
 
-  def verse(verse_number)
-    next_number = decrement(verse_number)
-    format_as_verse(
-      "#{bottles_of_beer(verse_number)} on the wall, " \
-      "#{bottles_of_beer(verse_number)}.",
-      instruction(verse_number) +
-      ", #{bottles_of_beer(next_number)} on the wall."
-    )
+  def verse(number)
+    Verse.new(number).lyrics
   end
 
-  private
+  # One verse.
+  class Verse
+    attr_accessor :number
 
-  def format_as_verse(*lines)
-    lines.map(&:capitalize).join("\n") + "\n"
-  end
-
-  def decrement(verse_number)
-    next_number = verse_number - 1
-    return MAXIMUM_BOTTLES if next_number.negative?
-
-    next_number
-  end
-
-  def instruction(verse_number)
-    if verse_number.zero?
-      'Go to the store and buy some more'
-    else
-      "Take #{indefinite_pronoun(verse_number)} down and pass it around"
+    def initialize(number)
+      @number = number
     end
-  end
 
-  def bottles_of_beer(number)
-    if number == 1
-      '1 bottle of beer'
-    elsif number.zero?
-      'no more bottles of beer'
-    else
-      "#{number} bottles of beer"
+    def lyrics
+      lines.map(&:capitalize).join("\n") + "\n"
     end
-  end
 
-  def indefinite_pronoun(number)
-    if number == 1
-      'it'
-    else
-      'one'
+    private
+
+    def next_number
+      next_number = @number - 1
+      return MAXIMUM_BOTTLES if next_number.negative?
+
+      next_number
+    end
+
+    def lines
+      [
+        "#{bottles_of_beer(number)} on the wall, " \
+        "#{bottles_of_beer(number)}.",
+        instruction(number) +
+          ", #{bottles_of_beer(next_number)} on the wall."
+      ]
+    end
+
+    def instruction(verse_number)
+      if verse_number.zero?
+        'Go to the store and buy some more'
+      else
+        "Take #{indefinite_pronoun(verse_number)} down and pass it around"
+      end
+    end
+
+    def bottles_of_beer(number)
+      if number == 1
+        '1 bottle of beer'
+      elsif number.zero?
+        'no more bottles of beer'
+      else
+        "#{number} bottles of beer"
+      end
+    end
+
+    def indefinite_pronoun(number)
+      if number == 1
+        'it'
+      else
+        'one'
+      end
     end
   end
 end
