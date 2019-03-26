@@ -2,6 +2,12 @@
 
 # Returns the lyrics to a song about beer.
 class Bottles
+  def verses(from, to)
+    from.downto(to).map do |verse_number|
+      verse(verse_number)
+    end.join("\n")
+  end
+
   def verse(verse_number)
     next_number = decrement(verse_number)
     format_as_verse(
