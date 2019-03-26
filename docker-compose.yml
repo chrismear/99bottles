@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  test:
+    build: .
+    restart: "no"
+    command: ["bundle", "exec", "ruby", "test/bottles_test.rb"]
+    volumes:
+      - .:/app:delegated
