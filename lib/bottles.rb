@@ -41,37 +41,67 @@ class Bottles
 
     def lines
       [
-        "#{bottles_of_beer(number)} on the wall, " \
-        "#{bottles_of_beer(number)}.",
-        instruction(number) +
-          ", #{bottles_of_beer(next_number)} on the wall."
+        "#{bottle.bottles_of_beer} on the wall, " \
+        "#{bottle.bottles_of_beer}.",
+        bottle.instruction +
+          ", #{next_bottle.bottles_of_beer} on the wall."
       ]
     end
 
-    def instruction(verse_number)
-      if verse_number.zero?
-        'Go to the store and buy some more'
+    def bottle
+      BottlesDescription.for(number)
+    end
+
+    def next_bottle
+      BottlesDescription.for(next_number)
+    end
+  end
+
+  # Words for no bottles.
+  class ZeroBottleDescription
+    def bottles_of_beer
+      'no more bottles of beer'
+    end
+
+    def instruction
+      'Go to the store and buy some more'
+    end
+  end
+
+  # Words for a bottle.
+  class OneBottleDescription < ZeroBottleDescription
+    def bottles_of_beer
+      '1 bottle of beer'
+    end
+
+    def instruction
+      'Take it down and pass it around'
+    end
+  end
+
+  # Words for bottles.
+  class BottlesDescription < ZeroBottleDescription
+    def self.for(number)
+      case number
+      when 0
+        ZeroBottleDescription.new
+      when 1
+        OneBottleDescription.new
       else
-        "Take #{indefinite_pronoun(verse_number)} down and pass it around"
+        new(number)
       end
     end
 
-    def bottles_of_beer(number)
-      if number == 1
-        '1 bottle of beer'
-      elsif number.zero?
-        'no more bottles of beer'
-      else
-        "#{number} bottles of beer"
-      end
+    def initialize(number)
+      @number = number
     end
 
-    def indefinite_pronoun(number)
-      if number == 1
-        'it'
-      else
-        'one'
-      end
+    def bottles_of_beer
+      "#{@number} bottles of beer"
+    end
+
+    def instruction
+      'Take one down and pass it around'
     end
   end
 end
