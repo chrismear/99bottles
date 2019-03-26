@@ -3,13 +3,35 @@
 # Returns the lyrics to a song about beer.
 class Bottles
   def verse(verse_number)
-    "#{bottles_of_beer(verse_number)} on the wall, " \
-    "#{bottles_of_beer(verse_number)}.\n" \
-    "Take #{indefinite_pronoun(verse_number)} down and pass it around, " \
-    "#{bottles_of_beer(verse_number - 1)} on the wall.\n"
+    next_number = decrement(verse_number)
+    format_as_verse(
+      "#{bottles_of_beer(verse_number)} on the wall, " \
+      "#{bottles_of_beer(verse_number)}.",
+      instruction(verse_number) +
+      ", #{bottles_of_beer(next_number)} on the wall."
+    )
   end
 
   private
+
+  def format_as_verse(*lines)
+    lines.map(&:capitalize).join("\n") + "\n"
+  end
+
+  def decrement(verse_number)
+    next_number = verse_number - 1
+    return 99 if next_number.negative?
+
+    next_number
+  end
+
+  def instruction(verse_number)
+    if verse_number.zero?
+      'Go to the store and buy some more'
+    else
+      "Take #{indefinite_pronoun(verse_number)} down and pass it around"
+    end
+  end
 
   def bottles_of_beer(number)
     if number == 1
