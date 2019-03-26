@@ -2,62 +2,106 @@
 
 # Returns the lyrics to a song about beer.
 class Bottles
+  MAXIMUM_BOTTLES = 99
+
   def song
-    verses(99, 0)
+    verses(MAXIMUM_BOTTLES, 0)
   end
 
   def verses(from, to)
     from.downto(to).map do |verse_number|
-      verse(verse_number)
+      Verse.new(verse_number).lyrics
     end.join("\n")
   end
 
-  def verse(verse_number)
-    next_number = decrement(verse_number)
-    format_as_verse(
-      "#{bottles_of_beer(verse_number)} on the wall, " \
-      "#{bottles_of_beer(verse_number)}.",
-      instruction(verse_number) +
-      ", #{bottles_of_beer(next_number)} on the wall."
-    )
+  def verse(number)
+    Verse.new(number).lyrics
   end
 
-  private
+  # One verse.
+  class Verse
+    attr_accessor :number
 
-  def format_as_verse(*lines)
-    lines.map(&:capitalize).join("\n") + "\n"
-  end
+    def initialize(number)
+      @number = number
+    end
 
-  def decrement(verse_number)
-    next_number = verse_number - 1
-    return 99 if next_number.negative?
+    def lyrics
+      lines.map(&:capitalize).join("\n") + "\n"
+    end
 
-    next_number
-  end
+    private
 
-  def instruction(verse_number)
-    if verse_number.zero?
-      'Go to the store and buy some more'
-    else
-      "Take #{indefinite_pronoun(verse_number)} down and pass it around"
+    def next_number
+      next_number = @number - 1
+      return MAXIMUM_BOTTLES if next_number.negative?
+
+      next_number
+    end
+
+    def lines
+      [
+        "#{bottle.bottles_of_beer} on the wall, " \
+        "#{bottle.bottles_of_beer}.",
+        bottle.instruction +
+          ", #{next_bottle.bottles_of_beer} on the wall."
+      ]
+    end
+
+    def bottle
+      BottlesDescription.for(number)
+    end
+
+    def next_bottle
+      BottlesDescription.for(next_number)
     end
   end
 
-  def bottles_of_beer(number)
-    if number == 1
-      '1 bottle of beer'
-    elsif number.zero?
+  # Words for no bottles.
+  class ZeroBottleDescription
+    def bottles_of_beer
       'no more bottles of beer'
-    else
-      "#{number} bottles of beer"
+    end
+
+    def instruction
+      'Go to the store and buy some more'
     end
   end
 
-  def indefinite_pronoun(number)
-    if number == 1
-      'it'
-    else
-      'one'
+  # Words for a bottle.
+  class OneBottleDescription < ZeroBottleDescription
+    def bottles_of_beer
+      '1 bottle of beer'
+    end
+
+    def instruction
+      'Take it down and pass it around'
+    end
+  end
+
+  # Words for bottles.
+  class BottlesDescription < ZeroBottleDescription
+    def self.for(number)
+      case number
+      when 0
+        ZeroBottleDescription.new
+      when 1
+        OneBottleDescription.new
+      else
+        new(number)
+      end
+    end
+
+    def initialize(number)
+      @number = number
+    end
+
+    def bottles_of_beer
+      "#{@number} bottles of beer"
+    end
+
+    def instruction
+      'Take one down and pass it around'
     end
   end
 end
