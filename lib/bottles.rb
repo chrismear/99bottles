@@ -2,8 +2,10 @@
 
 # Returns the lyrics to a song about beer.
 class Bottles
+  MAXIMUM_BOTTLES = 99
+
   def song
-    verses(99, 0)
+    verses(MAXIMUM_BOTTLES, 0)
   end
 
   def verses(from, to)
@@ -30,7 +32,7 @@ class Bottles
 
   def decrement(verse_number)
     next_number = verse_number - 1
-    return 99 if next_number.negative?
+    return MAXIMUM_BOTTLES if next_number.negative?
 
     next_number
   end
