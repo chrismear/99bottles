@@ -2,6 +2,10 @@
 
 # Returns the lyrics to a song about beer.
 class Bottles
+  def song
+    verses(99, 0)
+  end
+
   def verses(from, to)
     from.downto(to).map do |verse_number|
       verse(verse_number)
